@@ -2,12 +2,17 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class Hardware {
     public DcMotorEx leftWheel = null;
@@ -19,9 +24,11 @@ public class Hardware {
 
     //--------------------SLIDER------------------
     public DcMotorEx slider = null;
+    public Servo gripperFront = null;
+    public Servo gripperBack = null;
 
     //---------------------SENSORS-----------------
-    public TouchSensor button = null;
+    public RevTouchSensor button = null;
     public BNO055IMU imu;
 
     public void init(@NotNull HardwareMap hwMap) {
@@ -65,8 +72,18 @@ public class Hardware {
         slider.setDirection(DcMotorEx.Direction.FORWARD);
         slider.setPower(0.0);
 
+        gripperFront = hwMap.get(Servo.class, "front");
+        gripperBack = hwMap.get(Servo.class, "back");
+
         //-------------------SENSORS-------------------------------(imu is separate from this)
-        button = hwMap.get(TouchSensor.class, "touch");
+        button = hwMap.get(RevTouchSensor.class, "touch");
+
+        //Auto caching is the simplest way to work with bulk reads. Small risk of
+        //performance loss with duplicate calls per hardware iteration, but overall should be fine.
+        List<LynxModule> allHubs = hwMap.getAll(LynxModule.class);
+        for (LynxModule hub : allHubs) {
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
     }
 
     public void initIMU(@NotNull HardwareMap hwMap) {

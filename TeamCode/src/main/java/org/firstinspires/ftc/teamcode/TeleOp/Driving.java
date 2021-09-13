@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Hardware;
 import org.firstinspires.ftc.teamcode.Miscellaneous.*;
+import org.firstinspires.ftc.teamcode.Wrappers.ClawWrapper;
 import org.firstinspires.ftc.teamcode.Wrappers.LifterWrapper;
 
 @TeleOp(group = "Main")
@@ -16,6 +17,7 @@ public class Driving extends LinearOpMode {
 
     Hardware robot;
     LifterWrapper lifter;
+    ClawWrapper claw;
 
     double drive, turn;
 
@@ -45,12 +47,13 @@ public class Driving extends LinearOpMode {
             handleDriving();
             handleLifter();
             handleSlider();
+            handleClaw();
         }
     }
 
     void handleSlider() {
-        newLeftBumper = gamepad2.left_bumper;
-        newRightBumper = gamepad2.right_bumper;
+        newLeftBumper = gamepad1.left_bumper;
+        newRightBumper = gamepad1.right_bumper;
         if ((newLeftBumper != oldLeftBumper) || (newRightBumper != oldRightBumper)) {
             if (robot.slider.getCurrentPosition() < 40) {
                 newLeftBumper = false;
@@ -76,7 +79,13 @@ public class Driving extends LinearOpMode {
         }
         oldButtonState = newButtonState;
 
-        lifterNewPower = -gamepad2.right_stick_y;
+        if (gamepad1.left_trigger > 0) {
+            lifterNewPower = -gamepad1.left_trigger;
+        } else if (gamepad1.right_trigger > 0) {
+            lifterNewPower = gamepad1.right_trigger;
+        } else {
+            lifterNewPower = 0;
+        }
         if (lifterNewPower != lifterOldPower) {
             if (newButtonState && lifterNewPower < 0) {
                 //if button is pressed do not allow downwards movement
@@ -87,9 +96,18 @@ public class Driving extends LinearOpMode {
         lifterOldPower = lifterNewPower;
     }
 
+    void handleClaw() {
+        if (controller1.AOnce()) {
+            claw.attach();
+        }
+        if (controller1.BOnce()) {
+            claw.detach();
+        }
+    }
+
     void handleDriving() {
-        drive = -gamepad1.left_stick_y;
-        turn = gamepad1.right_stick_x;
+        drive = controller1.left_stick_y;
+        turn = -controller1.right_stick_x;
 
         double leftPower = Range.clip(drive + turn, -1.0, 1.0);
         double rightPower = Range.clip(drive - turn, -1.0, 1.0);
@@ -102,5 +120,7 @@ public class Driving extends LinearOpMode {
         robot = new Hardware();
         robot.init(hardwareMap);
         lifter = new LifterWrapper(robot.leftLifter, robot.rightLifter, robot.button);
+        claw = new ClawWrapper(robot.gripperFront, robot.gripperBack);
+        claw.initial();
     }
 }

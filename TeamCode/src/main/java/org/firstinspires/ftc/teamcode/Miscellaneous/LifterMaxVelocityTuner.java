@@ -12,10 +12,9 @@ import org.firstinspires.ftc.teamcode.Hardware;
 import org.firstinspires.ftc.teamcode.Wrappers.LifterWrapper;
 
 @Config
-@Disabled
 @Autonomous()
 public class LifterMaxVelocityTuner extends LinearOpMode {
-    public static double RUNTIME = 1.0;
+    public static double RUNTIME = 2.0;
 
     private double maxVelocity = 0.0;
 
@@ -30,6 +29,8 @@ public class LifterMaxVelocityTuner extends LinearOpMode {
         telemetry.addLine("Press start when ready.");
         telemetry.update();
 
+        robot = new Hardware();
+        robot.init(hardwareMap);
         lifter = new LifterWrapper(robot.leftLifter, robot.rightLifter, robot.button);
         waitForStart();
 
@@ -37,6 +38,7 @@ public class LifterMaxVelocityTuner extends LinearOpMode {
         telemetry.update();
 
         ElapsedTime timer = new ElapsedTime();
+        timer.reset();
 
         lifter.setLifterPower(1);
         while (!isStopRequested() && timer.seconds() < RUNTIME) {
@@ -47,7 +49,7 @@ public class LifterMaxVelocityTuner extends LinearOpMode {
         }
         lifter.setLifterPower(0.0);
 
-        telemetry.addData("Max Velocity", maxVelocity);
+        telemetry.addData("Maximum Velocity", maxVelocity);
         telemetry.update();
 
         while (!isStopRequested() && opModeIsActive()) idle();

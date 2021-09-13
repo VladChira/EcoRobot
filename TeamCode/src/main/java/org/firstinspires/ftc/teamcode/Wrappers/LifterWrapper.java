@@ -1,26 +1,19 @@
 package org.firstinspires.ftc.teamcode.Wrappers;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-import kotlin.Experimental;
-
 @Config
 public class LifterWrapper {
-    public static volatile boolean kill = false;
-    private long lastMillis = 0;
-    private volatile int currentTicks = 0;
-    private volatile int lastTicks = 0;
-
-    public static volatile boolean finished = true;
-
-    private DcMotorEx rightLifter;
-    private DcMotorEx leftLifter;
-    private TouchSensor button;
+    private final DcMotorEx rightLifter;
+    private final DcMotorEx leftLifter;
+    private final RevTouchSensor button;
 
     public static double MAX_VEL = 0;
     public static double MAX_ACC = 0;
@@ -28,7 +21,7 @@ public class LifterWrapper {
 
     public static double TICKS_PER_INCH = 0;
 
-    public LifterWrapper(DcMotorEx leftLifter, DcMotorEx rightLifter, TouchSensor button) {
+    public LifterWrapper(DcMotorEx leftLifter, DcMotorEx rightLifter, RevTouchSensor button) {
         this.leftLifter = leftLifter;
         this.rightLifter = rightLifter;
         this.button = button;
@@ -36,11 +29,27 @@ public class LifterWrapper {
 
     public void setRunMode(DcMotor.RunMode runMode) {
         this.leftLifter.setMode(runMode);
-        this.rightLifter.setMode(runMode);
     }
 
-    public double getLifterPosition() {
+    public void setTargetPosition(int position) {
+        leftLifter.setTargetPosition(position);
+    }
+
+    //bad idea to use this
+    public void setTargetTolerance(int tolerance) {
+        leftLifter.setTargetPositionTolerance(tolerance);
+    }
+
+    public void setPIDFCoeffs(DcMotor.RunMode runMode, PIDFCoefficients pidfCoeffs) {
+        leftLifter.setPIDFCoefficients(runMode, pidfCoeffs);
+    }
+
+    public int getLifterPosition() {
         return leftLifter.getCurrentPosition();
+    }
+
+    public boolean isBusy() {
+        return leftLifter.isBusy();
     }
 
     public double getLifterVelocity() {
@@ -48,7 +57,7 @@ public class LifterWrapper {
     }
 
     public void setLifterPower(double power) {
-        if(power == 0) stop();
+        if (Math.abs(power) < 0.05) stop();
         this.rightLifter.setPower(power);
         this.leftLifter.setPower(power);
     }
@@ -56,5 +65,9 @@ public class LifterWrapper {
     public void stop() {
         this.rightLifter.setPower(0.0);
         this.leftLifter.setPower(0.0);
+    }
+
+    public PIDFCoefficients getPIDFCoeffs(DcMotorEx.RunMode runMode) {
+        return leftLifter.getPIDFCoefficients(runMode);
     }
 }
