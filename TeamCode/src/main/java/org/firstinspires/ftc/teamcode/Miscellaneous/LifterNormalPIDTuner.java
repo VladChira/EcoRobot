@@ -34,7 +34,7 @@ public class LifterNormalPIDTuner extends LinearOpMode {
     public LifterWrapper lifter;
     ControllerInput controller;
 
-    public static double kP = 5;
+    public static double kP = 10;
     public static double kI = 0;
     public static double kD = 0;
     public static double f = 0;
@@ -98,6 +98,7 @@ public class LifterNormalPIDTuner extends LinearOpMode {
                         }
                         lifter.stop();
                         freeze = true;
+                        sleep(500);
                         telemetry.log().clear();
                         telemetry.addData("Ticks", lifter.getLifterPosition());
                         telemetry.addData("Arrived. Elapsed time: ", timer.seconds());
