@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Hardware;
+import org.firstinspires.ftc.teamcode.JoystickResponseCurves.ResponseCurve;
 import org.firstinspires.ftc.teamcode.Miscellaneous.*;
 import org.firstinspires.ftc.teamcode.Wrappers.ClawWrapper;
 import org.firstinspires.ftc.teamcode.Wrappers.LifterWrapper;
@@ -52,8 +53,8 @@ public class Driving extends LinearOpMode {
     }
 
     void handleSlider() {
-        newLeftBumper = gamepad1.left_bumper;
-        newRightBumper = gamepad1.right_bumper;
+        newLeftBumper = controller1.leftBumper();
+        newRightBumper = controller1.rightBumper();
         if ((newLeftBumper != oldLeftBumper) || (newRightBumper != oldRightBumper)) {
             if (robot.slider.getCurrentPosition() < 40) {
                 newLeftBumper = false;
@@ -79,10 +80,13 @@ public class Driving extends LinearOpMode {
         }
         oldButtonState = newButtonState;
 
-        if (gamepad1.left_trigger > 0) {
-            lifterNewPower = -gamepad1.left_trigger;
-        } else if (gamepad1.right_trigger > 0) {
-            lifterNewPower = gamepad1.right_trigger;
+        double left_trigger = controller1.left_trigger;
+        double right_trigger = controller1.right_trigger;
+
+        if (left_trigger > 0) {
+            lifterNewPower = ResponseCurve.precisionCurve(-left_trigger);
+        } else if (right_trigger > 0) {
+            lifterNewPower = ResponseCurve.speedCurve(right_trigger);
         } else {
             lifterNewPower = 0;
         }

@@ -15,11 +15,11 @@ public class LifterWrapper {
     private final DcMotorEx leftLifter;
     private final RevTouchSensor button;
 
-    public static double MAX_VEL = ticksToCM(0.0);
-    public static double MAX_ACC = ticksToCM(0.0);
-    public static double MAX_JERK = ticksToCM(0.0);
+    public static double MAX_VEL = 650.0;
+    public static double MAX_ACC = 200.0;
+    public static double MAX_JERK = 0.0;
 
-    public static double TICKS_PER_INCH = 0;
+    public static double TICKS_PER_CM = 0;
 
     public LifterWrapper(DcMotorEx leftLifter, DcMotorEx rightLifter, RevTouchSensor button) {
         this.leftLifter = leftLifter;
@@ -69,9 +69,5 @@ public class LifterWrapper {
 
     public PIDFCoefficients getPIDFCoeffs(DcMotorEx.RunMode runMode) {
         return leftLifter.getPIDFCoefficients(runMode);
-    }
-
-    public static double ticksToCM(double ticks) {
-        return ticks; //TODO convert correctly
     }
 }

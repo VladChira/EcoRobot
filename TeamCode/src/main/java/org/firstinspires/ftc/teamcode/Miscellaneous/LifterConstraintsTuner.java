@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.Wrappers.LifterWrapper;
 @Config
 @Autonomous()
 public class LifterConstraintsTuner extends LinearOpMode {
-    public static double RUNTIME = 2.0;
+    public static double RUNTIME = 2.5;
 
     private double maxVelocity = 0.0, maxAcceleration = 0.0;
 
@@ -40,8 +40,7 @@ public class LifterConstraintsTuner extends LinearOpMode {
         ElapsedTime timer = new ElapsedTime();
         timer.reset();
 
-        double time,prevTime = 0, vel, prevVel = 0, acc, prevAcc = 0;
-        time = System.currentTimeMillis();
+        double prevTime = 0, vel, prevVel = 0, acc, prevAcc = 0;
 
         lifter.setLifterPower(1);
         while (!isStopRequested() && timer.seconds() < RUNTIME) {
@@ -67,6 +66,7 @@ public class LifterConstraintsTuner extends LinearOpMode {
         lifter.setLifterPower(0.0);
 
         telemetry.addData("Maximum Velocity", maxVelocity);
+        telemetry.addData("Maximum Acceleration", maxAcceleration);
         telemetry.update();
 
         while (!isStopRequested() && opModeIsActive()) idle();
